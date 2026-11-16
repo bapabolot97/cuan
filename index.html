@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Trading Bot - TradingView Edition</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">📈 Crypto Trading Bot <span class="tag">TradingView Edition</span></div>
+    <div class="topbar-right">
+      <span id="status-badge" class="badge">● OFFLINE</span>
+      <span id="topbar-mode" class="badge mode">MODE: AUTO</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card chart-card">
+      <div class="card-title">
+        📊 Grafik TradingView
+        <span id="chart-symbol-label">BINANCE:BTCUSDT</span>
+      </div>
+      <div class="chart-controls">
+        <select id="exchange-select">
+          <option value="BINANCE">BINANCE</option>
+          <option value="OKX">OKX</option>
+          <option value="BYBIT">BYBIT</option>
+        </select>
+        <select id="symbol-select">
+          <option value="BTCUSDT" selected>BTC/USDT</option>
+          <option value="ETHUSDT">ETH/USDT</option>
+          <option value="SOLUSDT">SOL/USDT</option>
+          <option value="BNBUSDT">BNB/USDT</option>
+          <option value="XRPUSDT">XRP/USDT</option>
+          <option value="ADAUSDT">ADA/USDT</option>
+          <option value="DOGEUSDT">DOGE/USDT</option>
+          <option value="LINKUSDT">LINK/USDT</option>
+          <option value="DOTUSDT">DOT/USDT</option>
+        </select>
+        <select id="interval-select">
+          <option value="D" selected>1D</option>
+          <option value="W">1W</option>
+          <option value="60">1H</option>
+          <option value="240">4H</option>
+          <option value="30">30m</option>
+          <option value="15">15m</option>
+          <option value="5">5m</option>
+          <option value="1">1m</option>
+        </select>
+      </div>
+      <div id="tv-widget"></div>
+    </section>
+
+    <section class="card bot-card">
+      <div class="card-title">🤖 Bot Trading</div>
+
+      <div class="mode-row">
+        <button id="btn-mode-auto" class="btn mode-btn active">AUTO</button>
+        <button id="btn-mode-manual" class="btn mode-btn">MANUAL</button>
+      </div>
+
+      <div id="auto-panel">
+        <div class="kv"><span>Strategi</span><b>SMA Cross (Fast 10 / Slow 30)</b></div>
+        <div class="kv"><span>Status</span><b id="strategy-status">⏳ Mengecek...</b></div>
+        <div class="kv"><span>Size per trade</span><b><input id="risk-size" type="number" min="1" value="25" class="inp"> USDT</b></div>
+        <button id="btn-strategy-run" class="btn">Jalankan Cek Strategi</button>
+      </div>
+
+      <div id="manual-panel" class="hidden">
+        <div class="kv"><span>Sisi</span>
+          <select id="manual-side" class="inp">
+            <option value="LONG">LONG 🟢</option>
+            <option value="SHORT">SHORT 🔴</option>
+          </select>
+        </div>
+        <div class="kv"><span>Entry</span><input id="manual-entry" type="number" step="any" class="inp" value=""></div>
+        <div class="kv"><span>Stop Loss</span><input id="manual-sl" type="number" step="any" class="inp" value=""></div>
+        <div class="kv"><span>Take Profit</span><input id="manual-tp" type="number" step="any" class="inp" value=""></div>
+        <div class="kv"><span>Size</span><input id="manual-size" type="number" min="1" value="25" class="inp"> USDT</div>
+        <button id="btn-manual-run" class="btn">Jalankan Manual → Telegram</button>
+      </div>
+
+      <div class="kv"><span>Balance</span><b id="balance-box">1000 USDT</b></div>
+      <div id="position-box" class="pos-box">Belum ada posisi</div>
+      <div class="kv"><span>Last Signal</span><b id="last-signal">—</b></div>
+    </section>
+  </main>
+
+  <section class="card tg-card">
+    <div class="card-title">📱 Integrasi Telegram</div>
+    <div class="tg-grid">
+      <div class="tg-field">
+        <label>Bot Token</label>
+        <input id="tg-token" type="text" placeholder="8987838096:AAGSvsvwnUg_-sDvvsfiwfODfEjmIOjUg3g" class="inp">
+      </div>
+      <div class="tg-field">
+        <label>Chat ID</label>
+        <input id="tg-chatid" type="text" placeholder="-1003766816646" class="inp">
+      </div>
+    </div>
+    <div class="tg-actions">
+      <button id="btn-tg-test" class="btn">Kirim Pesan Test ke Telegram</button>
+      <button id="btn-tg-signal" class="btn">Kirim Signal Terakhir ke Telegram</button>
+    </div>
+    <ul id="log" class="log"></ul>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
+
