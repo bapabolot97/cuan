@@ -359,16 +359,123 @@ async function closePosition() {
   return ok;
 }
 
+async function loadRevival() {
+  try {
+    const r = await fetch("https://api.coingecko.com/api/v3/search/trending");
+    const j = await r.json();
+    const coins = j.coins || [];
+    const list = $("revival-list");
+    list.innerHTML = "";
+    for (const c of coins.slice(0, 10)) {
+      const li = document.createElement("li");
+      const sp = document.createElement("span");
+      sp.className = "trending-name";
+      sp.textContent = (c.item_name || c.item_id) + " " + (c.item_symbol ? "(" + c.item_symbol + ")" : "") + " - revival watch";
+      li.appendChild(sp);
+      list.appendChild(li);
+    }
+  } catch (e) { log("Gagal ambil revival: " + e); }
+}
+
+async function loadApr() {
+  const list = $("apr-list");
+  list.innerHTML = "";
+  const items = ["BTC - Staking APR ~3.5%", "ETH - Staking APR ~3.2%", "SOL - Staking APR ~6.5%"];
+  for (const it of items) {
+    const li = document.createElement("li");
+    const sp = document.createElement("span");
+    sp.className = "trending-name";
+    sp.textContent = it;
+    li.appendChild(sp);
+    list.appendChild(li);
+  }
+}
+
+async function loadPools() {
+  const list = $("pools-list");
+  list.innerHTML = "";
+  const items = ["NEW POOL: ETH/USDT - liquidity added", "NEW POOL: SOL/USDT - liquidity added", "NEW POOL: BNB/USDT - liquidity added"];
+  for (const it of items) {
+    const li = document.createElement("li");
+    const sp = document.createElement("span");
+    sp.className = "trending-name";
+    sp.textContent = it;
+    li.appendChild(sp);
+    list.appendChild(li);
+  }
+}
+
+async function loadCats() {
+  const list = $("cats-list");
+  list.innerHTML = "";
+  const items = ["DeFi", "Meme", "Layer2", "AI", "Gaming"];
+  for (const it of items) {
+    const li = document.createElement("li");
+    const sp = document.createElement("span");
+    sp.className = "trending-name";
+    sp.textContent = it;
+    li.appendChild(sp);
+    list.appendChild(li);
+  }
+}
+
+async function loadTools() {
+  const list = $("tools-list");
+  list.innerHTML = "";
+  const items = ["RSI Scanner", "MACD Strategy", "S/R Zones", "Whale Radar", "Signal Generator"];
+  for (const it of items) {
+    const li = document.createElement("li");
+    const sp = document.createElement("span");
+    sp.className = "trending-name";
+    sp.textContent = it;
+    li.appendChild(sp);
+    list.appendChild(li);
+  }
+}
+
+function setupNav() {
+  const navEl = document.getElementById("main-nav");
+  if (!navEl) { return; }
+  const btns = navEl.querySelectorAll(".nav-btn");
+  btns.forEach((b) => {
+    b.addEventListener("click", () => {
+      const key = b.getAttribute("data-nav");
+      document.querySelectorAll(".nav-btn").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      const map = {
+        dashboard: "sec-dashboard",
+        trending: "sec-trending",
+        revival: "sec-revival",
+        apr: "sec-apr",
+        pools: "sec-pools",
+        cats: "sec-cats",
+        tools: "sec-tools"
+      };
+      const secId = map[key];
+      document.querySelectorAll("[id^='sec-']").forEach((el) => {
+        if (el.id === secId) { el.classList.remove("hidden"); }
+        else { el.classList.add("hidden"); }
+      });
+    });
+  });
+}
+
 async function init() {
   STATE = loadState();
   $("tg-token").value = localStorage.getItem("tg_token") || "";
   $("tg-chatid").value = localStorage.getItem("tg_chat_id") || "";
   setMode(STATE.mode);
   bindEvents();
+  setupNav();
   refreshChart();
   await refreshMarket();
   await loadTrending();
   await fetchWhales();
+  await loadRevival();
+  await loadApr();
+  await loadPools();
+  await loadCats();
+  await loadTools();
   if (STATE.mode === "auto") { await runStrategy(); }
   setInterval(refreshMarket, 30000);
   setInterval(() => { if (STATE.mode === "auto") runStrategy(); }, 60000);
@@ -377,6 +484,8 @@ async function init() {
 }
 
 init();
+
+
 
 
 

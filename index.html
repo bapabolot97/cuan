@@ -16,7 +16,17 @@
     </div>
   </header>
 
-  <main class="grid">
+<nav class="main-nav" id="main-nav">
+  <button class="nav-btn active" data-nav="dashboard">Dashboard</button>
+  <button class="nav-btn" data-nav="trending">Trending</button>
+  <button class="nav-btn" data-nav="revival">Revival Radar</button>
+  <button class="nav-btn" data-nav="apr">Stock APR</button>
+  <button class="nav-btn" data-nav="pools">New Pools</button>
+  <button class="nav-btn" data-nav="cats">Categories</button>
+  <button class="nav-btn" data-nav="tools">Tools</button>
+</nav>
+
+  <main class="grid" id="sec-dashboard">
     <section class="card chart-card">
       <div class="card-title">
         📊 Grafik TradingView
@@ -89,18 +99,38 @@
     </section>
   </main>
 
-  <section class="card trending-card">
+  <section class="card trending-card" id="sec-trending">
     <div class="card-title">Trending Coins</div>
     <ul id="trending-list" class="trending-list"></ul>
   </section>
 
-  <section class="card whale-card">
+  <section class="card menu-card" id="sec-revival">
+    <div class="card-title">Revival Radar</div>
+    <div class="trending-list" id="revival-list"></div>
+  </section>
+  <section class="card menu-card" id="sec-apr">
+    <div class="card-title">Stock APR</div>
+    <div class="trending-list" id="apr-list"></div>
+  </section>
+  <section class="card menu-card" id="sec-pools">
+    <div class="card-title">New Pools</div>
+    <div class="trending-list" id="pools-list"></div>
+  </section>
+  <section class="card menu-card" id="sec-cats">
+    <div class="card-title">Categories</div>
+    <div class="trending-list" id="cats-list"></div>
+  </section>
+  <section class="card menu-card" id="sec-tools">
+    <div class="card-title">Tools</div>
+    <div class="trending-list" id="tools-list"></div>
+  </section>
+  <section class="card whale-card" id="sec-whale">
     <div class="card-title">Whale Radar</div>
     <div class="kv"><span>Threshold</span><b>7000 USD</b></div>
     <div id="whale-list" class="trending-list"></div>
   </section>
 
-  <section class="card tg-card">
+  <section class="card tg-card" id="sec-tg">
     <div class="card-title">📱 Integrasi Telegram</div>
     <div class="tg-grid">
       <div class="tg-field">
@@ -122,6 +152,8 @@
 <script src="app.js"></script>
 </body>
 </html>
+
+
 
 
 
