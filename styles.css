@@ -190,8 +190,9 @@ button.btn:hover { opacity: 0.9; }
 
 .log li { padding: 4px 0; border-bottom: 1px solid #1e232d; }
 
-#tv-widget .tradingview-widget-container { height: 620px; }
-#tv-widget .tradingview-widget-container__widget { height: 620px; }
+#tv-widget { height: 700px; width: 100%; }
+#tv-widget .tradingview-widget-container { height: 700px; width: 100%; }
+#tv-widget .tradingview-widget-container__widget { height: 700px; width: 100%; }
 .trending-card { margin-bottom: 16px; }
 .trending-list { list-style: none; margin: 0; padding: 0; }
 .trending-list li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1e232d; font-size: 13px; }
@@ -199,3 +200,4 @@ button.btn:hover { opacity: 0.9; }
 .trending-name { color: #d1d4dc; font-weight: 600; }
 .trending-price { color: #ffffff; }
 .btn.small { width: auto; padding: 6px 10px; font-size: 12px; }
+
