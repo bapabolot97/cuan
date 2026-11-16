@@ -196,7 +196,7 @@ async function runStrategy() {
   let sl, tp;
   if (sig === "LONG") { sl = entry * 0.98; tp = entry * 1.05; }
   else { sl = entry * 1.02; tp = entry * 0.95; }
-  const msg = buildSignal(exLabel, tvSym, INTERVAL, sig, entry, sl, tp, size, "SMA Cross (Fast 10 / Slow 30)");
+  const msg = buildSignal(exLabel, tvSym, INTERVAL, sig, entry, sl, tp, size, "SMA Cross");
   STATE.lastSignal = msg;
   saveState();
   STATE.position = { side: sig, entry: entry, sl: sl, tp: tp, size: size, symbol: tvSym };
@@ -253,6 +253,81 @@ function runManual() {
   });
 }
 
+async function loadTrending() {
+  try {
+    const r = await fetch("https://api.coingecko.com/api/v3/search/trending");
+    const j = await r.json();
+    const coins = j.coins || [];
+    const list = $("trending-list");
+    list.innerHTML = "";
+    for (const c of coins.slice(0, 10)) {
+      let sym = null;
+      for (const k of Object.keys(COINGECKO_IDS)) {
+        if (COINGECKO_IDS[k] === c.item_id) { sym = k; break; }
+      }
+      const li = document.createElement("li");
+      const left = document.createElement("span");
+      left.className = "trending-name";
+      left.textContent = (c.item_name || c.item_id) + " " + (c.item_symbol ? "(" + c.item_symbol + ")" : "");
+      const btn = document.createElement("button");
+      btn.className = "btn small";
+      btn.textContent = "Trading";
+      btn.addEventListener("click", async () => {
+        if (sym) {
+          SYMBOL = sym;
+          saveState();
+          refreshChart();
+          await refreshMarket();
+          const msg = await runStrategy();
+          if (msg) {
+            const ok = await tgSend($("tg-token").value.trim(), $("tg-chatid").value.trim(), msg);
+            log(ok ? "Trending signal terkirim ke Telegram OK" : "Gagal kirim trending signal");
+          }
+        }
+      });
+      li.appendChild(left);
+      li.appendChild(btn);
+      list.appendChild(li);
+    }
+  } catch (e) { log("Gagal ambil trending coins: " + e); }
+}
+
+async function fetchWhales() {
+  try {
+    const r = await fetch("https://api.gateio.ws/api/v4/spot/trades?currency_pair=BTC_USDT&limit=100");
+    const trades = await r.json();
+    const whales = [];
+    for (const tr of trades) {
+      const p = parseFloat(tr.price || 0);
+      const a = parseFloat(tr.amount || 0);
+      const usd = p * a;
+      const side = (tr.side || "").toLowerCase();
+      if (usd >= 7000) {
+        whales.push({ side: side, usd: usd, price: p, amount: a, time: tr.create_time });
+      }
+    }
+    const list = $("whale-list");
+    list.innerHTML = "";
+    if (!whales.length) {
+      const li = document.createElement("li");
+      const sp = document.createElement("span");
+      sp.className = "trending-name";
+      sp.textContent = "Belum ada transaksi whale > 7000 USD.";
+      li.appendChild(sp);
+      list.appendChild(li);
+      return;
+    }
+    for (const w of whales.slice(0, 10)) {
+      const li = document.createElement("li");
+      const sp = document.createElement("span");
+      sp.className = "trending-name";
+      sp.textContent = (w.side === "buy" ? "BUY" : "SELL") + " $" + w.usd.toFixed(0) + " @ $" + w.price.toFixed(1) + " (" + (w.time || "") + ")";
+      li.appendChild(sp);
+      list.appendChild(li);
+    }
+  } catch (e) { log("Gagal ambil whale data: " + e); }
+}
+
 async function init() {
   STATE = loadState();
   $("tg-token").value = localStorage.getItem("tg_token") || "";
@@ -261,9 +336,16 @@ async function init() {
   bindEvents();
   refreshChart();
   await refreshMarket();
+  await loadTrending();
+  await fetchWhales();
   if (STATE.mode === "auto") { await runStrategy(); }
   setInterval(refreshMarket, 30000);
   setInterval(() => { if (STATE.mode === "auto") runStrategy(); }, 60000);
+  setInterval(loadTrending, 600000);
+  setInterval(fetchWhales, 300000);
 }
 
 init();
+
+
+

@@ -62,7 +62,7 @@
       </div>
 
       <div id="auto-panel">
-        <div class="kv"><span>Strategi</span><b>SMA Cross (Fast 10 / Slow 30)</b></div>
+        <div class="kv"><span>Strategi</span><b>SMA Cross</b></div>
         <div class="kv"><span>Status</span><b id="strategy-status">⏳ Mengecek...</b></div>
         <div class="kv"><span>Size per trade</span><b><input id="risk-size" type="number" min="1" value="25" class="inp"> USDT</b></div>
         <button id="btn-strategy-run" class="btn">Jalankan Cek Strategi</button>
@@ -88,6 +88,17 @@
     </section>
   </main>
 
+  <section class="card trending-card">
+    <div class="card-title">Trending Coins</div>
+    <ul id="trending-list" class="trending-list"></ul>
+  </section>
+
+  <section class="card whale-card">
+    <div class="card-title">Whale Radar</div>
+    <div class="kv"><span>Threshold</span><b>7000 USD</b></div>
+    <div id="whale-list" class="trending-list"></div>
+  </section>
+
   <section class="card tg-card">
     <div class="card-title">📱 Integrasi Telegram</div>
     <div class="tg-grid">
@@ -110,4 +121,7 @@
 <script src="app.js"></script>
 </body>
 </html>
+
+
+
 
