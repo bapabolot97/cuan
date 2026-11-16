@@ -181,6 +181,23 @@ async function refreshMarket() {
 async function runStrategy() {
   STRATEGY_STATUS = "⏳ Mengecek...";
   $("strategy-status").textContent = STRATEGY_STATUS;
+  if (STATE.position) {
+    const pos = STATE.position;
+    const price = LAST_PRICE;
+    if (price) {
+      const hitSL = (pos.side === "LONG" && price <= pos.sl) || (pos.side === "SHORT" && price >= pos.sl);
+      const hitTP = (pos.side === "LONG" && price >= pos.tp) || (pos.side === "SHORT" && price <= pos.tp);
+      if (hitSL || hitTP) {
+        const pnl = pos.side === "LONG" ? ((price - pos.entry) / pos.entry) * pos.size : ((pos.entry - price) / pos.entry) * pos.size;
+        STATE.position = null;
+        saveState();
+        log("AUTO CLOSE " + pos.side + " karena SL/TP tercapai. PnL=" + pnl.toFixed(2));
+        await tgSend($("tg-token").value.trim(), $("tg-chatid").value.trim(),
+          "*CRYPTO BOT*\nAUTO CLOSE\nSide: " + pos.side + "\nEntry: $" + pos.entry + "\nClose: $" + price + "\nPnL: $" + pnl.toFixed(2));
+        return "AUTO_CLOSED";
+      }
+    }
+  }
   const sig = detectCross(CANDLES);
   if (!sig) {
     STRATEGY_STATUS = "✅ Tidak ada cross (SMA 10/30)";
@@ -233,6 +250,7 @@ function bindEvents() {
   $("btn-manual-run").addEventListener("click", () => runManual());
   $("btn-tg-test").addEventListener("click", () => sendTest());
   $("btn-tg-signal").addEventListener("click", () => sendLastSignal());
+  $("btn-close-pos").addEventListener("click", closePosition);
 }
 
 function runManual() {
@@ -328,6 +346,19 @@ async function fetchWhales() {
   } catch (e) { log("Gagal ambil whale data: " + e); }
 }
 
+async function closePosition() {
+  if (!STATE.position) { log("Tidak ada posisi untuk ditutup."); return false; }
+  const pos = STATE.position;
+  const price = LAST_PRICE;
+  const pnl = pos.side === "LONG" ? ((price - pos.entry) / pos.entry) * pos.size : ((pos.entry - price) / pos.entry) * pos.size;
+  STATE.position = null;
+  saveState();
+  log("POSITION CLOSED " + pos.side + " pnl=" + pnl.toFixed(2));
+  const ok = await tgSend($("tg-token").value.trim(), $("tg-chatid").value.trim(),
+    "*CRYPTO BOT*\nPOSITION CLOSED\nSide: " + pos.side + "\nEntry: $" + pos.entry + "\nClose: $" + price + "\nPnL: $" + pnl.toFixed(2) + "\nSize: " + pos.size + " USDT");
+  return ok;
+}
+
 async function init() {
   STATE = loadState();
   $("tg-token").value = localStorage.getItem("tg_token") || "";
@@ -346,6 +377,7 @@ async function init() {
 }
 
 init();
+
 
 
 
