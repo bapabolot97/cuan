@@ -178,6 +178,26 @@ async function refreshMarket() {
   }
 }
 
+function findPivotLow(candles, n) {
+  const start = Math.max(0, candles.length - n);
+  let min = Infinity;
+  let price = candles[start] ? candles[start].c : 0;
+  for (let i = start; i < candles.length; i++) {
+    if (candles[i].c < min) { min = candles[i].c; price = candles[i].c; }
+  }
+  return { price: price };
+}
+
+function findPivotHigh(candles, n) {
+  const start = Math.max(0, candles.length - n);
+  let max = -Infinity;
+  let price = candles[start] ? candles[start].c : 0;
+  for (let i = start; i < candles.length; i++) {
+    if (candles[i].c > max) { max = candles[i].c; price = candles[i].c; }
+  }
+  return { price: price };
+}
+
 async function runStrategy() {
   STRATEGY_STATUS = "⏳ Mengecek...";
   $("strategy-status").textContent = STRATEGY_STATUS;
@@ -208,7 +228,7 @@ async function runStrategy() {
   $("strategy-status").textContent = STRATEGY_STATUS;
   const exLabel = (EXCHANGES[EXCHANGE] || EXCHANGES.BINANCE).label;
   const tvSym = tvSymbol();
-  const entry = LAST_PRICE;
+  const entry = sig === "LONG" ? findPivotLow(CANDLES, 10).price : findPivotHigh(CANDLES, 10).price;
   const size = parseFloat($("risk-size").value) || 25;
   let sl, tp;
   if (sig === "LONG") { sl = entry * 0.98; tp = entry * 1.05; }
@@ -484,6 +504,7 @@ async function init() {
 }
 
 init();
+
 
 
 
